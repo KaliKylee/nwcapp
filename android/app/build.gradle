@@ -1,0 +1,47 @@
+plugins {
+    id 'com.android.application'
+}
+
+def keystorePath = System.getenv("KEYSTORE_FILE")
+
+android {
+    namespace 'com.newwaycommunity.app'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.newwaycommunity.app"
+        minSdk 24
+        targetSdk 34
+        versionCode((project.findProperty('appVersionCode') ?: '1') as int)
+        versionName((project.findProperty('appVersionName') ?: '1.0') as String)
+    }
+
+    signingConfigs {
+        release {
+            if (keystorePath != null && !keystorePath.isEmpty()) {
+                storeFile file(keystorePath)
+                storePassword System.getenv("KEYSTORE_PASSWORD")
+                keyAlias System.getenv("KEY_ALIAS")
+                keyPassword System.getenv("KEY_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (keystorePath != null && !keystorePath.isEmpty()) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    androidResources {
+        noCompress += ['js', 'css', 'json', 'html']
+    }
+}
